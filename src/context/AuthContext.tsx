@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -7,9 +8,13 @@ import {
 } from 'react';
 import type { UserRole } from '../types/auth';
 
-type AuthContextValue = {
+export type { UserRole } from '../types/auth';
+
+export type AuthContextValue = {
   role: UserRole | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
+  isCommon: boolean;
   login: (selectedRole: UserRole) => void;
   logout: () => void;
 };
@@ -26,24 +31,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Aquí registro el rol elegido y marco la sesión como iniciada al presionar Ingresar.
-  const login = (selectedRole: UserRole) => {
+  const login = useCallback((selectedRole: UserRole) => {
     setRole(selectedRole);
     setIsAuthenticated(true);
-  };
+  }, []);
 
-  const logout = () => {
+  // Aquí cierro la sesión y limpio el rol para volver a Login.
+  const logout = useCallback(() => {
     setRole(null);
     setIsAuthenticated(false);
-  };
+  }, []);
+
+  const isAdmin = role === 'admin';
+  const isCommon = role === 'common';
 
   const value = useMemo(
     () => ({
       role,
       isAuthenticated,
+      isAdmin,
+      isCommon,
       login,
       logout,
     }),
-    [role, isAuthenticated]
+    [role, isAuthenticated, isAdmin, isCommon, login, logout]
   );
 
   return (
@@ -51,6 +62,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
+// Aquí expongo el hook para leer el contexto desde cualquier pantalla o navegador.
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
   if (!context) {

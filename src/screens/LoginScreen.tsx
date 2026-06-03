@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import {
   Alert,
@@ -11,12 +9,6 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { colors, commonStyles } from '../styles/common';
 import type { UserRole } from '../types/auth';
-import type { RootStackParamList } from '../types/navigation';
-
-type LoginScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Login'
->;
 
 type RoleOptionData = {
   value: UserRole;
@@ -57,7 +49,6 @@ function RoleOption({ role, selected, onSelect }: RoleOptionProps) {
 export default function LoginScreen() {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const { login } = useAuth();
-  const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handleIngresar = () => {
     if (!selectedRole) {
@@ -68,9 +59,8 @@ export default function LoginScreen() {
       return;
     }
 
-    // Aquí guardo el rol en el contexto y navego a las pestañas principales.
+    // Aquí solo actualizo el AuthContext; el navegador reacciona cuando isAuthenticated cambia.
     login(selectedRole);
-    navigation.replace('Main');
   };
 
   return (
