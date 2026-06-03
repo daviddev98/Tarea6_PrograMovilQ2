@@ -3,14 +3,18 @@ import { useAuth } from '../context/AuthContext';
 import { colors, commonStyles } from '../styles/common';
 
 export default function HomeScreen() {
-  const { role, isAuthenticated, logout } = useAuth();
+  const { role, isAuthenticated, isCommon, logout } = useAuth();
 
   return (
     <View style={commonStyles.screen}>
       <Text style={commonStyles.title}>Home</Text>
-      <Text style={commonStyles.subtitle}>Pestaña de inicio.</Text>
+      <Text style={commonStyles.subtitle}>
+        {isCommon
+          ? 'Pestaña de inicio (acceso common).'
+          : 'Pestaña de inicio.'}
+      </Text>
 
-      {/* Aquí muestro el rol guardado en el contexto para confirmar que la sesión está activa. */}
+      {/* Aquí confirmo el rol activo; common solo debería ver esta pestaña. */}
       {isAuthenticated && role ? (
         <Text style={styles.roleInfo}>Sesión activa como: {role}</Text>
       ) : null}

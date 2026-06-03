@@ -1,19 +1,35 @@
+import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { colors, commonStyles } from '../styles/common';
+import type { MainTabParamList } from '../types/navigation';
+
+type SettingsNavigationProp = BottomTabNavigationProp<
+  MainTabParamList,
+  'Settings'
+>;
 
 export default function SettingsScreen() {
-  const { role, logout } = useAuth();
+  const { isAdmin, logout } = useAuth();
+  const navigation = useNavigation<SettingsNavigationProp>();
+
+  // Aquí protejo Settings: si no soy admin según el contexto, regreso a Home.
+  useEffect(() => {
+    if (!isAdmin) {
+      navigation.navigate('Home');
+    }
+  }, [isAdmin, navigation]);
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <View style={commonStyles.screen}>
       <Text style={commonStyles.title}>Settings</Text>
-      <Text style={commonStyles.subtitle}>Pestaña de ajustes.</Text>
-
-      {/* Aquí también leo el rol desde el contexto para reutilizar el mismo estado global. */}
-      {role ? (
-        <Text style={styles.roleInfo}>Rol en contexto: {role}</Text>
-      ) : null}
+      <Text style={styles.settingsMessage}>estas en Settings</Text>
 
       <TouchableOpacity style={styles.logoutButton} onPress={logout}>
         <Text style={styles.logoutText}>Cerrar sesión</Text>
@@ -23,10 +39,11 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  roleInfo: {
+  settingsMessage: {
     marginTop: 16,
-    fontSize: 16,
-    color: colors.textSecondary,
+    fontSize: 18,
+    color: colors.text,
+    fontWeight: '600',
     textAlign: 'center',
   },
   logoutButton: {
