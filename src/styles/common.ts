@@ -7,7 +7,7 @@ export const colors = {
   text: '#1f2937',
   textSecondary: '#6b7280',
   border: '#e5e7eb',
-};
+} as const;
 
 export const commonStyles = StyleSheet.create({
   screen: {
